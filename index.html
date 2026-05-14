@@ -481,16 +481,15 @@
       box-shadow: 0 0 0 3px var(--blue-100);
       background: #fff;
     }
-    /* ── Tag Dropdown ─────────────────────────────────── */
-    .tag-dropdown-wrap {
+    /* ── Tag Dropdown (removed) / Category Combobox ─────── */
+    .combobox-wrap {
       position: relative;
     }
-    .tag-dropdown {
+    .combobox-dd {
       position: absolute;
       top: calc(100% + 4px);
       left: 0;
-      min-width: 200px;
-      max-width: 320px;
+      right: 0;
       background: #fff;
       border: 1.5px solid var(--blue-200);
       border-radius: 8px;
@@ -499,14 +498,14 @@
       overflow: hidden;
       display: none;
     }
-    .tag-dropdown.open { display: block; }
-    .tag-dropdown ul {
+    .combobox-dd.open { display: block; }
+    .combobox-dd ul {
       list-style: none;
       max-height: 200px;
       overflow-y: auto;
       padding: .3rem 0;
     }
-    .tag-dropdown li {
+    .combobox-dd li {
       padding: .45rem .85rem;
       font-size: .85rem;
       cursor: pointer;
@@ -516,16 +515,11 @@
       gap: .4rem;
       transition: background .1s;
     }
-    .tag-dropdown li:hover,
-    .tag-dropdown li.active { background: var(--blue-50); color: var(--blue-700); }
-    .tag-dropdown li .td-icon { font-size: .8rem; opacity: .6; }
-    .tag-dropdown li.td-new { color: var(--blue-600); font-weight: 600; border-top: 1px solid var(--gray-100); }
-    .tag-dropdown li.td-new .td-icon { opacity: 1; }
-    .tag-dropdown-empty {
-      padding: .6rem .85rem;
-      font-size: .82rem;
-      color: var(--gray-400);
-    }
+    .combobox-dd li:hover,
+    .combobox-dd li.active { background: var(--blue-50); color: var(--blue-700); }
+    .combobox-dd li .dd-icon { font-size: .8rem; opacity: .6; }
+    .combobox-dd li.dd-new { color: var(--blue-600); font-weight: 600; border-top: 1px solid var(--gray-100); }
+    .combobox-dd li.dd-new .dd-icon { opacity: 1; }
     .tag-chip {
       display: inline-flex;
       align-items: center;
@@ -845,16 +839,16 @@
       <div class="form-grid">
         <input type="text"  id="f-title"    placeholder="Title *"    required />
         <input type="url"   id="f-url"      placeholder="URL (https://…) *" required />
-        <input type="text"  id="f-category" placeholder="Category (e.g. Design, Dev, News)" />
+        <div class="combobox-wrap">
+          <input type="text"  id="f-category" placeholder="Category (e.g. Design, Dev, News)" autocomplete="off" />
+          <div class="combobox-dd" id="cat-dropdown"><ul></ul></div>
+        </div>
         <textarea           id="f-notes"    placeholder="Notes (optional)"></textarea>
         <div class="full">
-          <div class="tag-dropdown-wrap" id="form-tag-dd-wrap">
-            <div class="tag-input-wrap" id="tag-input-wrap" onclick="document.getElementById('f-tag-input').focus()">
-              <input type="text" id="f-tag-input" class="tag-text-input" placeholder="Type or pick a tag…" autocomplete="off" />
-            </div>
-            <div class="tag-dropdown" id="form-tag-dropdown"><ul></ul></div>
+          <div class="tag-input-wrap" id="tag-input-wrap" onclick="document.getElementById('f-tag-input').focus()">
+            <input type="text" id="f-tag-input" class="tag-text-input" placeholder="Add tags…" autocomplete="off" />
           </div>
-          <p class="tag-hint">Type to search tags or add a new one — press <kbd>Enter</kbd> or <kbd>,</kbd> to confirm</p>
+          <p class="tag-hint">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add a tag</p>
         </div>
       </div>
       <div style="margin-top:.75rem">
@@ -936,16 +930,18 @@
     <span class="popup-icon" id="popup-icon">📎</span>
     <h2 id="popup-title">Saving…</h2>
     <p class="popup-url" id="popup-url"></p>
-    <!-- Tag input row — shown before save -->
+    <!-- Fields row — shown before save -->
     <div class="popup-tag-row" id="popup-tag-row" style="display:none">
-      <label>Tags <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
-      <div class="tag-dropdown-wrap" id="popup-tag-dd-wrap">
-        <div class="tag-input-wrap" id="popup-tag-wrap" onclick="document.getElementById('popup-tag-input').focus()">
-          <input type="text" id="popup-tag-input" class="tag-text-input" placeholder="Type or pick a tag…" autocomplete="off" />
-        </div>
-        <div class="tag-dropdown" id="popup-tag-dropdown"><ul></ul></div>
+      <label>Category</label>
+      <div class="combobox-wrap">
+        <input type="text" id="popup-category-input" placeholder="e.g. Quick Save, Work, Reading…" autocomplete="off" style="width:100%;padding:.55rem .75rem;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.9rem;font-family:inherit;background:var(--gray-50);color:var(--gray-800);outline:none;" />
+        <div class="combobox-dd" id="popup-cat-dropdown"><ul></ul></div>
       </div>
-      <p class="tag-hint">Type to search tags or add a new one — press <kbd>Enter</kbd> or <kbd>,</kbd> to confirm</p>
+      <label style="margin-top:.6rem">Tags <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+      <div class="tag-input-wrap" id="popup-tag-wrap" onclick="document.getElementById('popup-tag-input').focus()">
+        <input type="text" id="popup-tag-input" class="tag-text-input" placeholder="Add tags…" autocomplete="off" />
+      </div>
+      <p class="tag-hint">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add a tag</p>
       <button class="popup-save-btn" id="popup-save-btn" type="button">Save Bookmark</button>
       <button class="popup-skip" id="popup-skip-btn" type="button">Skip tags and save</button>
     </div>
@@ -1039,22 +1035,12 @@
     return `<span class="heat-badge">${icons[tier]} ${clicks}</span>`;
   }
 
-  /* ── Tag Chip Management ───────────────────────────── */
-  // Manages a chip tag input with dropdown suggestion for a given wrap + dropdown element
-  function makeTagManager(wrapId, inputId, dropdownId) {
-    const wrap     = document.getElementById(wrapId);
-    const input    = document.getElementById(inputId);
-    const dropdown = dropdownId ? document.getElementById(dropdownId) : null;
+  /* ── Tag Chip Management (simple chip input, no dropdown) ── */
+  function makeTagManager(wrapId, inputId) {
+    const wrap  = document.getElementById(wrapId);
+    const input = document.getElementById(inputId);
     if (!wrap || !input) return null;
-    const state = { tags: [], activeIdx: -1 };
-
-    function allExistingTags() {
-      const set = new Set();
-      bookmarks.forEach(b => (b.tags || []).forEach(t => set.add(t)));
-      // also include tags already chosen in this session that aren't saved yet
-      state.tags.forEach(t => set.add(t));
-      return [...set].sort();
-    }
+    const state = { tags: [] };
 
     function addTag(raw) {
       const tag = raw.trim().toLowerCase().replace(/,/g, '');
@@ -1077,95 +1063,17 @@
         chip.querySelector('button').addEventListener('click', () => removeTag(tag));
         wrap.insertBefore(chip, input);
       });
-      input.placeholder = state.tags.length ? '' : 'Type or pick a tag…';
+      input.placeholder = state.tags.length ? '' : 'Add tags…';
     }
-
-    /* ── Dropdown ── */
-    function openDropdown(query) {
-      if (!dropdown) return;
-      const q    = (query || '').toLowerCase().trim();
-      const all  = allExistingTags().filter(t => !state.tags.includes(t));
-      const hits = q ? all.filter(t => t.includes(q)) : all;
-      const ul   = dropdown.querySelector('ul');
-      ul.innerHTML = '';
-      state.activeIdx = -1;
-
-      if (!hits.length && !q) {
-        // no existing tags at all
-        dropdown.classList.remove('open');
-        return;
-      }
-
-      hits.forEach((tag, i) => {
-        const li = document.createElement('li');
-        li.dataset.idx = i;
-        li.innerHTML = `<span class="td-icon">🏷️</span>${escHtml(tag)}`;
-        li.addEventListener('mousedown', e => { e.preventDefault(); addTag(tag); input.value = ''; closeDropdown(); input.focus(); });
-        ul.appendChild(li);
-      });
-
-      // "Add new tag" option when query doesn't exactly match an existing tag
-      if (q && !all.includes(q)) {
-        const li = document.createElement('li');
-        li.className = 'td-new';
-        li.dataset.idx = hits.length;
-        li.innerHTML = `<span class="td-icon">➕</span>Add "<strong>${escHtml(q)}</strong>"`;
-        li.addEventListener('mousedown', e => { e.preventDefault(); addTag(q); input.value = ''; closeDropdown(); input.focus(); });
-        ul.appendChild(li);
-      }
-
-      if (ul.children.length) {
-        dropdown.classList.add('open');
-      } else {
-        dropdown.classList.remove('open');
-      }
-    }
-
-    function closeDropdown() {
-      if (dropdown) dropdown.classList.remove('open');
-      state.activeIdx = -1;
-    }
-
-    function highlightItem(idx) {
-      if (!dropdown) return;
-      const items = dropdown.querySelectorAll('li');
-      items.forEach((li, i) => li.classList.toggle('active', i === idx));
-      state.activeIdx = idx;
-    }
-
-    /* ── Events ── */
-    input.addEventListener('focus', () => openDropdown(input.value));
-    input.addEventListener('input', () => openDropdown(input.value));
 
     input.addEventListener('keydown', e => {
-      const items = dropdown ? [...dropdown.querySelectorAll('li')] : [];
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        highlightItem(Math.min(state.activeIdx + 1, items.length - 1));
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        highlightItem(Math.max(state.activeIdx - 1, 0));
-        return;
-      }
-      if (e.key === 'Escape') { closeDropdown(); return; }
-
-      if ((e.key === 'Enter' || e.key === ',') && state.activeIdx >= 0 && items[state.activeIdx]) {
-        e.preventDefault();
-        items[state.activeIdx].dispatchEvent(new MouseEvent('mousedown'));
-        return;
-      }
-      if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); input.value = ''; closeDropdown(); return; }
-      if (e.key === ',')     { e.preventDefault(); addTag(input.value); input.value = ''; closeDropdown(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); input.value = ''; }
+      if (e.key === ',')     { e.preventDefault(); addTag(input.value); input.value = ''; }
       if (e.key === 'Backspace' && !input.value && state.tags.length) {
         removeTag(state.tags[state.tags.length - 1]);
       }
     });
-
-    input.addEventListener('blur', () => {
-      setTimeout(() => { closeDropdown(); if (input.value.trim()) { addTag(input.value); input.value = ''; } }, 150);
-    });
+    input.addEventListener('blur', () => { if (input.value.trim()) { addTag(input.value); input.value = ''; } });
 
     return {
       getTags: () => [...state.tags],
@@ -1174,8 +1082,78 @@
     };
   }
 
-  const formTagMgr  = makeTagManager('tag-input-wrap', 'f-tag-input',      'form-tag-dropdown');
-  const popupTagMgr = makeTagManager('popup-tag-wrap',  'popup-tag-input',  'popup-tag-dropdown');
+  const formTagMgr  = makeTagManager('tag-input-wrap', 'f-tag-input');
+  const popupTagMgr = makeTagManager('popup-tag-wrap',  'popup-tag-input');
+
+  /* ── Category Combobox ─────────────────────────────── */
+  function makeCategoryCombobox(inputId, dropdownId) {
+    const input    = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+    let activeIdx = -1;
+
+    function allCategories() {
+      return [...new Set(bookmarks.map(b => b.category).filter(Boolean))].sort();
+    }
+
+    function openDropdown() {
+      const q    = input.value.trim().toLowerCase();
+      const all  = allCategories();
+      const hits = q ? all.filter(c => c.toLowerCase().includes(q)) : all;
+      const ul   = dropdown.querySelector('ul');
+      ul.innerHTML = '';
+      activeIdx = -1;
+
+      hits.forEach(cat => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="dd-icon">📁</span>${escHtml(cat)}`;
+        li.addEventListener('mousedown', e => { e.preventDefault(); input.value = cat; closeDropdown(); });
+        ul.appendChild(li);
+      });
+
+      // "Create new" option when typed text doesn't exactly match an existing category
+      if (q && !all.map(c => c.toLowerCase()).includes(q)) {
+        const li = document.createElement('li');
+        li.className = 'dd-new';
+        li.innerHTML = `<span class="dd-icon">➕</span>Create "<strong>${escHtml(input.value.trim())}</strong>"`;
+        li.addEventListener('mousedown', e => { e.preventDefault(); const v = input.value.trim(); closeDropdown(); input.value = v; });
+        ul.appendChild(li);
+      }
+
+      dropdown.classList.toggle('open', ul.children.length > 0);
+    }
+
+    function closeDropdown() {
+      dropdown.classList.remove('open');
+      activeIdx = -1;
+    }
+
+    function highlightItem(idx) {
+      const items = [...dropdown.querySelectorAll('li')];
+      items.forEach((li, i) => li.classList.toggle('active', i === idx));
+      activeIdx = idx;
+    }
+
+    input.addEventListener('focus', openDropdown);
+    input.addEventListener('input', openDropdown);
+
+    input.addEventListener('keydown', e => {
+      const items = [...dropdown.querySelectorAll('li')];
+      if (e.key === 'ArrowDown') { e.preventDefault(); highlightItem(Math.min(activeIdx + 1, items.length - 1)); return; }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); highlightItem(Math.max(activeIdx - 1, 0)); return; }
+      if (e.key === 'Escape')    { closeDropdown(); return; }
+      if (e.key === 'Enter' && activeIdx >= 0 && items[activeIdx]) {
+        e.preventDefault();
+        items[activeIdx].dispatchEvent(new MouseEvent('mousedown'));
+        return;
+      }
+    });
+
+    input.addEventListener('blur', () => setTimeout(closeDropdown, 150));
+  }
+
+  makeCategoryCombobox('f-category', 'cat-dropdown');
+  makeCategoryCombobox('popup-category-input', 'popup-cat-dropdown');
 
   /* ── Tag Filter State ──────────────────────────────── */
   let activeTag = null; // null = no tag filter
@@ -1591,18 +1569,22 @@
       return;
     }
 
-    // Show tag input form
+    // Show fields form
     tagRow.style.display = 'block';
     iconEl.textContent   = '📎';
     statusEl.textContent = '';
+    // Pre-fill category with "Quick Save"
+    const popupCatInput = document.getElementById('popup-category-input');
+    if (popupCatInput && !popupCatInput.value) popupCatInput.value = 'Quick Save';
 
     function doSave() {
       // Flush partial tag input
       const rawTag = document.getElementById('popup-tag-input').value.trim();
       if (rawTag && popupTagMgr) { document.getElementById('popup-tag-input').dispatchEvent(new Event('blur')); }
-      const tags = popupTagMgr ? popupTagMgr.getTags() : [];
+      const tags     = popupTagMgr ? popupTagMgr.getTags() : [];
+      const category = (popupCatInput && popupCatInput.value.trim()) ? popupCatInput.value.trim() : 'Quick Save';
 
-      const bm = { id: uid(), title: title || url, url, category: 'Quick Save', tags, notes: '', date: dateStr(), clicks: 0 };
+      const bm = { id: uid(), title: title || url, url, category, tags, notes: '', date: dateStr(), clicks: 0 };
       bookmarks.unshift(bm);
       save();
 
