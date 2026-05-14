@@ -461,6 +461,142 @@
     }
     .btn-see-more:hover { background: var(--blue-50); border-color: var(--blue-400); }
 
+    /* ── Bookmarklet Card ─────────────────────────────── */
+    .bookmarklet-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .bookmarklet-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      margin-bottom: .25rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .bookmarklet-card .sub {
+      font-size: .82rem;
+      color: var(--gray-500);
+      margin-bottom: 1.1rem;
+    }
+    .bm-drag-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.1rem;
+    }
+    .bm-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .55rem 1.1rem;
+      background: var(--blue-600);
+      color: #fff !important;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: grab;
+      box-shadow: var(--shadow);
+      transition: background .15s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .bm-link:hover { background: var(--blue-700); }
+    .bm-drag-hint {
+      font-size: .8rem;
+      color: var(--gray-500);
+      flex: 1;
+    }
+    .bm-drag-hint strong { color: var(--gray-700); }
+    .bm-instructions {
+      background: var(--blue-50);
+      border: 1px solid var(--blue-100);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      margin-bottom: .9rem;
+    }
+    .bm-instructions p {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      margin-bottom: .4rem;
+    }
+    .bm-instructions ol {
+      padding-left: 1.1rem;
+    }
+    .bm-instructions li {
+      font-size: .79rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+    .bm-instructions li strong { color: var(--gray-800); }
+    .btn-copy-bm {
+      padding: .45rem 1rem;
+      border: 1.5px solid var(--blue-200);
+      background: #fff;
+      color: var(--blue-600);
+      border-radius: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-copy-bm:hover { background: var(--blue-50); border-color: var(--blue-400); }
+    .btn-copy-bm.copied { border-color: #16a34a; color: #16a34a; background: #f0fdf4; }
+
+    /* ── Popup / Quick-Save Mode ──────────────────────── */
+    body.popup-mode header,
+    body.popup-mode main { display: none; }
+
+    .popup-save-view {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      background: var(--gray-50);
+      padding: 1.5rem;
+    }
+    body.popup-mode .popup-save-view { display: flex; }
+
+    .popup-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem 1.75rem;
+      text-align: center;
+      max-width: 360px;
+      width: 100%;
+    }
+    .popup-icon {
+      font-size: 2.5rem;
+      margin-bottom: .75rem;
+      display: block;
+    }
+    .popup-card h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: .4rem;
+    }
+    .popup-card .popup-url {
+      font-size: .78rem;
+      color: var(--blue-500);
+      word-break: break-all;
+      margin-bottom: .3rem;
+    }
+    .popup-card .popup-status {
+      font-size: .85rem;
+      color: var(--gray-500);
+      margin-top: .75rem;
+    }
+    .popup-card .popup-status.success { color: #16a34a; font-weight: 600; }
+
     /* ── Responsive ───────────────────────────────────── */
     @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
@@ -556,7 +692,41 @@
       <button class="btn-import" id="btn-import" onclick="runImport()">Import Bookmarks</button>
     </div>
   </div>
+
+  <!-- Bookmarklet Card -->
+  <div class="bookmarklet-card">
+    <h2>📎 Quick-Save Bookmarklet</h2>
+    <p class="sub">Save any webpage to your dashboard in one click — no copy-pasting needed.</p>
+    <div class="bm-drag-area">
+      <a id="bm-link" class="bm-link" href="#" onclick="return false;" title="Drag me to your bookmark bar">
+        📎 Save to My Bookmarks
+      </a>
+      <p class="bm-drag-hint">
+        <strong>Drag this button</strong> to your browser's bookmark bar.<br>
+        Then click it on any webpage to instantly save it here.
+      </p>
+    </div>
+    <div class="bm-instructions">
+      <p>🔧 How to show your bookmark bar:</p>
+      <ol>
+        <li><strong>Chrome / Edge:</strong> Ctrl+Shift+B (Win) or ⌘+Shift+B (Mac)</li>
+        <li><strong>Firefox:</strong> View → Toolbars → Bookmarks Toolbar</li>
+        <li><strong>Safari:</strong> View → Show Favorites Bar</li>
+      </ol>
+    </div>
+    <button class="btn-copy-bm" id="btn-copy-bm" onclick="copyBookmarklet()">Copy bookmarklet code</button>
+  </div>
 </main>
+
+<!-- Popup / Quick-Save View (shown instead of main UI when opened via bookmarklet) -->
+<div class="popup-save-view" id="popup-save-view">
+  <div class="popup-card">
+    <span class="popup-icon" id="popup-icon">📎</span>
+    <h2 id="popup-title">Saving…</h2>
+    <p class="popup-url" id="popup-url"></p>
+    <p class="popup-status" id="popup-status">Adding to your bookmarks…</p>
+  </div>
+</div>
 
 <!-- Toast -->
 <div id="toast"></div>
@@ -938,7 +1108,105 @@
     return (url || '').toLowerCase().replace(/\/+$/, '').trim();
   }
 
+  /* ── Bookmarklet Setup ─────────────────────────────── */
+  function getAppURL() {
+    // Return the app's base URL (strip existing params + hash)
+    return location.href.replace(/[?#].*$/, '');
+  }
+
+  function buildBookmarkletHref() {
+    const appUrl = getAppURL();
+    // The bookmarklet JS — opens the app in a small popup with current page's title + URL
+    const code = `javascript:(function(){var t=encodeURIComponent(document.title||location.hostname);var u=encodeURIComponent(location.href);window.open('${appUrl}?bm_title='+t+'&bm_url='+u,'bmqs','width=420,height=220,top=200,left=400,resizable=no');})();`;
+    return code;
+  }
+
+  function initBookmarklet() {
+    const link = document.getElementById('bm-link');
+    if (link) link.href = buildBookmarkletHref();
+  }
+
+  function copyBookmarklet() {
+    const code = buildBookmarkletHref();
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('btn-copy-bm');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy bookmarklet code'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      // Fallback for file:// where clipboard API may be restricted
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const btn = document.getElementById('btn-copy-bm');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy bookmarklet code'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  /* ── Popup / Quick-Save Mode ───────────────────────── */
+  function handlePopupMode() {
+    const params = new URLSearchParams(location.search);
+    const bmTitle = params.get('bm_title');
+    const bmUrl   = params.get('bm_url');
+    if (!bmTitle && !bmUrl) return; // normal mode
+
+    // Switch to popup UI
+    document.body.classList.add('popup-mode');
+
+    const titleEl  = document.getElementById('popup-title');
+    const urlEl    = document.getElementById('popup-url');
+    const statusEl = document.getElementById('popup-status');
+    const iconEl   = document.getElementById('popup-icon');
+
+    const title = decodeURIComponent(bmTitle || '');
+    const url   = decodeURIComponent(bmUrl   || '');
+
+    titleEl.textContent = title || url;
+    urlEl.textContent   = url;
+
+    // Check duplicate
+    const isDupe = bookmarks.some(b => normalizeURL(b.url) === normalizeURL(url));
+    if (isDupe) {
+      iconEl.textContent   = '⚠️';
+      statusEl.textContent = 'Already in your bookmarks.';
+      statusEl.classList.add('success');
+      setTimeout(() => { try { window.close(); } catch(e) {} }, 1800);
+      return;
+    }
+
+    if (!url || !/^https?:\/\//i.test(url)) {
+      iconEl.textContent   = '❌';
+      titleEl.textContent  = 'Invalid URL';
+      statusEl.textContent = 'Only http/https pages can be bookmarked.';
+      return;
+    }
+
+    // Save
+    const bm = { id: uid(), title: title || url, url, category: 'Quick Save', notes: '', date: dateStr(), clicks: 0 };
+    bookmarks.unshift(bm);
+    save();
+
+    // Show success
+    iconEl.textContent = '✅';
+    statusEl.textContent = 'Saved! This window will close…';
+    statusEl.classList.add('success');
+
+    setTimeout(() => {
+      try { window.close(); } catch(e) {}
+      // If window.close() was blocked (e.g. not opened by script)
+      statusEl.textContent = '✅ Saved! You can close this tab.';
+    }, 1500);
+  }
+
   /* ── Init ──────────────────────────────────────────── */
+  handlePopupMode();
+  initBookmarklet();
   render();
 </script>
 </body>
