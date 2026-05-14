@@ -4,6 +4,11 @@ A personal bookmark manager that lives in a **single HTML file** — no build to
 
 ![Bookmark Dashboard](https://img.shields.io/badge/Built%20With-HTML%20%2B%20CSS%20%2B%20JS-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Live](https://img.shields.io/badge/Live-GitHub%20Pages-brightgreen?style=flat-square)
+
+🔗 **Live app:** https://eugenefoli.github.io/my-bookmarks-app/
+
+> **Bookmarklet users:** Drag the "📎 Save to My Bookmarks" button from the live app (link above) to your bookmark bar. The bookmarklet requires the HTTPS URL — it will not work if you open the app directly from a local `file://` path in Chrome.
 
 ---
 
@@ -31,16 +36,23 @@ A personal bookmark manager that lives in a **single HTML file** — no build to
 
 ## 🚀 Getting Started
 
-### Option 1 — Open directly
-```bash
-open index.html
+### Option 1 — Live (Recommended)
+Open the app directly in your browser — no setup needed:
 ```
-No server needed. Works in Chrome, Firefox, Safari, Edge.
+https://eugenefoli.github.io/my-bookmarks-app/
+```
+This is required for the bookmarklet to work in Chrome.
 
-### Option 2 — Serve locally (optional)
+### Option 2 — Local file
 ```bash
-npx serve .
-# or
+open ~/Documents/Github/my-bookmarks-app/index.html
+```
+All features work except the bookmarklet (Chrome blocks `file://` popups from https pages).
+
+### Option 3 — Local server
+Serves at `http://localhost:8080` — bookmarklet works here too.
+```bash
+cd ~/Documents/Github/my-bookmarks-app
 python3 -m http.server 8080
 ```
 
