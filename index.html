@@ -461,6 +461,160 @@
     }
     .btn-see-more:hover { background: var(--blue-50); border-color: var(--blue-400); }
 
+    /* ── Tag Chip Input ───────────────────────────────── */
+    .tag-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .35rem;
+      padding: .5rem .7rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      background: var(--gray-50);
+      cursor: text;
+      transition: border-color .2s, box-shadow .2s;
+      min-height: 42px;
+    }
+    .tag-input-wrap:focus-within {
+      outline: none;
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px var(--blue-100);
+      background: #fff;
+    }
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .2rem .55rem;
+      background: var(--blue-100);
+      color: var(--blue-800);
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tag-chip button {
+      border: none;
+      background: none;
+      color: var(--blue-500);
+      cursor: pointer;
+      font-size: .75rem;
+      padding: 0;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+    }
+    .tag-chip button:hover { color: var(--blue-800); }
+    .tag-text-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: .88rem;
+      font-family: inherit;
+      color: var(--gray-800);
+      flex: 1;
+      min-width: 100px;
+      padding: 0;
+    }
+    .tag-hint {
+      font-size: .74rem;
+      color: var(--gray-400);
+      margin-top: .2rem;
+    }
+
+    /* ── Card Tags ────────────────────────────────────── */
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+    }
+    .card-tag {
+      display: inline-block;
+      padding: .15rem .5rem;
+      border-radius: 999px;
+      background: var(--blue-100);
+      color: var(--blue-700);
+      font-size: .72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .card-tag:hover { background: var(--blue-200); }
+
+    /* ── Tag Filter Section ───────────────────────────── */
+    .tag-filters-wrap {
+      margin-bottom: 1.5rem;
+    }
+    .tag-filters-label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .4rem;
+    }
+    .tag-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+    }
+    .tag-filter-btn {
+      padding: .3rem .75rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--blue-100);
+      background: #fff;
+      color: var(--blue-600);
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .tag-filter-btn:hover { background: var(--blue-50); }
+    .tag-filter-btn.active {
+      background: var(--blue-100);
+      color: var(--blue-800);
+      border-color: var(--blue-300);
+    }
+
+    /* ── Popup Tag Input ──────────────────────────────── */
+    .popup-tag-row {
+      margin-top: .9rem;
+      text-align: left;
+    }
+    .popup-tag-row label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: .35rem;
+    }
+    .popup-save-btn {
+      margin-top: .9rem;
+      width: 100%;
+      padding: .65rem;
+      background: var(--blue-600);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .popup-save-btn:hover { background: var(--blue-700); }
+    .popup-skip {
+      display: block;
+      text-align: center;
+      margin-top: .5rem;
+      font-size: .78rem;
+      color: var(--gray-400);
+      cursor: pointer;
+      text-decoration: underline;
+      border: none;
+      background: none;
+    }
+    .popup-skip:hover { color: var(--gray-600); }
+
     /* ── Bookmarklet Card ─────────────────────────────── */
     .bookmarklet-card {
       background: #fff;
@@ -618,9 +772,13 @@
 <main>
   <!-- Search + Filters -->
   <div class="controls">
-    <input type="search" id="search" placeholder="Search by title or category…" />
+    <input type="search" id="search" placeholder="Search by title, category, or tag…" />
   </div>
   <div class="filters" id="filters"></div>
+  <div class="tag-filters-wrap" id="tag-filters-wrap" style="display:none">
+    <div class="tag-filters-label">Tags</div>
+    <div class="tag-filters" id="tag-filters"></div>
+  </div>
   <div class="stats"  id="stats"></div>
 
   <!-- Grid -->
@@ -644,6 +802,12 @@
         <input type="url"   id="f-url"      placeholder="URL (https://…) *" required />
         <input type="text"  id="f-category" placeholder="Category (e.g. Design, Dev, News)" />
         <textarea           id="f-notes"    placeholder="Notes (optional)"></textarea>
+        <div class="full">
+          <div class="tag-input-wrap" id="tag-input-wrap" onclick="document.getElementById('f-tag-input').focus()">
+            <input type="text" id="f-tag-input" class="tag-text-input" placeholder="Add tags…" autocomplete="off" />
+          </div>
+          <p class="tag-hint">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add a tag</p>
+        </div>
       </div>
       <div style="margin-top:.75rem">
         <button type="submit" class="btn-add">Save Bookmark</button>
@@ -724,7 +888,17 @@
     <span class="popup-icon" id="popup-icon">📎</span>
     <h2 id="popup-title">Saving…</h2>
     <p class="popup-url" id="popup-url"></p>
-    <p class="popup-status" id="popup-status">Adding to your bookmarks…</p>
+    <!-- Tag input row — shown before save -->
+    <div class="popup-tag-row" id="popup-tag-row" style="display:none">
+      <label>Tags <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+      <div class="tag-input-wrap" id="popup-tag-wrap" onclick="document.getElementById('popup-tag-input').focus()">
+        <input type="text" id="popup-tag-input" class="tag-text-input" placeholder="Add tags…" autocomplete="off" />
+      </div>
+      <p class="tag-hint">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add a tag</p>
+      <button class="popup-save-btn" id="popup-save-btn" type="button">Save Bookmark</button>
+      <button class="popup-skip" id="popup-skip-btn" type="button">Skip tags and save</button>
+    </div>
+    <p class="popup-status" id="popup-status"></p>
   </div>
 </div>
 
@@ -766,9 +940,12 @@
     save();
   }
 
-  // Migration: ensure every bookmark has a clicks field
+  // Migration: ensure every bookmark has clicks + tags fields
   let migrated = false;
-  bookmarks.forEach(b => { if (typeof b.clicks !== 'number') { b.clicks = 0; migrated = true; } });
+  bookmarks.forEach(b => {
+    if (typeof b.clicks !== 'number') { b.clicks = 0; migrated = true; }
+    if (!Array.isArray(b.tags))       { b.tags = [];   migrated = true; }
+  });
   if (migrated) save();
 
   /* ── Utilities ─────────────────────────────────────── */
@@ -811,6 +988,85 @@
     return `<span class="heat-badge">${icons[tier]} ${clicks}</span>`;
   }
 
+  /* ── Tag Chip Management ───────────────────────────── */
+  // Manages a chip tag input for a given wrap element and backing array
+  function makeTagManager(wrapId, inputId) {
+    const wrap  = document.getElementById(wrapId);
+    const input = document.getElementById(inputId);
+    if (!wrap || !input) return null;
+    const state = { tags: [] };
+
+    function addTag(raw) {
+      const tag = raw.trim().toLowerCase().replace(/,/g, '');
+      if (!tag || state.tags.includes(tag)) return;
+      state.tags.push(tag);
+      renderChips();
+    }
+
+    function removeTag(tag) {
+      state.tags = state.tags.filter(t => t !== tag);
+      renderChips();
+    }
+
+    function renderChips() {
+      // Remove existing chips (keep the input)
+      wrap.querySelectorAll('.tag-chip').forEach(el => el.remove());
+      state.tags.forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${escHtml(tag)}<button type="button" aria-label="Remove tag ${escHtml(tag)}">✕</button>`;
+        chip.querySelector('button').addEventListener('click', () => removeTag(tag));
+        wrap.insertBefore(chip, input);
+      });
+      input.placeholder = state.tags.length ? '' : (wrapId === 'tag-input-wrap' ? 'Add tags…' : 'Add tags…');
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); input.value = ''; }
+      if (e.key === ',')     { e.preventDefault(); addTag(input.value); input.value = ''; }
+      if (e.key === 'Backspace' && !input.value && state.tags.length) {
+        removeTag(state.tags[state.tags.length - 1]);
+      }
+    });
+    input.addEventListener('blur', () => { if (input.value.trim()) { addTag(input.value); input.value = ''; } });
+
+    return {
+      getTags: () => [...state.tags],
+      setTags: (arr) => { state.tags = arr.map(t => t.toLowerCase()); renderChips(); },
+      reset:   () => { state.tags = []; renderChips(); },
+    };
+  }
+
+  const formTagMgr  = makeTagManager('tag-input-wrap', 'f-tag-input');
+  const popupTagMgr = makeTagManager('popup-tag-wrap',  'popup-tag-input');
+
+  /* ── Tag Filter State ──────────────────────────────── */
+  let activeTag = null; // null = no tag filter
+
+  function getAllTags() {
+    const set = new Set();
+    bookmarks.forEach(b => (b.tags || []).forEach(t => set.add(t)));
+    return [...set].sort();
+  }
+
+  function renderTagFilters() {
+    const tags = getAllTags();
+    const wrap  = document.getElementById('tag-filters-wrap');
+    const el    = document.getElementById('tag-filters');
+    if (tags.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    el.innerHTML = tags.map(t =>
+      `<button class="tag-filter-btn ${t === activeTag ? 'active' : ''}"
+               onclick="setTagFilter('${escHtml(t)}')">#${escHtml(t)}</button>`
+    ).join('');
+  }
+
+  function setTagFilter(tag) {
+    activeTag = activeTag === tag ? null : tag; // toggle
+    showAll = false;
+    render();
+  }
+
   /* ── Render ────────────────────────────────────────── */
   let showAll = false; // tracks whether "See more" is expanded
 
@@ -831,13 +1087,16 @@
   function filtered() {
     const q = document.getElementById('search').value.trim().toLowerCase();
     return bookmarks.filter(b => {
-      const cat = b.category || 'Uncategorized';
+      const cat  = b.category || 'Uncategorized';
+      const tags = b.tags || [];
       const matchesCat = activeFilter === 'All' || cat === activeFilter;
+      const matchesTag = !activeTag || tags.includes(activeTag);
       const matchesQ   = !q ||
         b.title.toLowerCase().includes(q) ||
         cat.toLowerCase().includes(q) ||
-        (b.notes || '').toLowerCase().includes(q);
-      return matchesCat && matchesQ;
+        (b.notes || '').toLowerCase().includes(q) ||
+        tags.some(t => t.includes(q));
+      return matchesCat && matchesTag && matchesQ;
     }).sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || 0);
   }
 
@@ -883,6 +1142,7 @@
              rel="noopener noreferrer" title="${escHtml(b.url)}"
              data-id="${escHtml(b.id)}">${escHtml(displayUrl)}</a>
           <span class="card-category">${escHtml(cat)}</span>
+          ${(b.tags && b.tags.length) ? `<div class="card-tags">${b.tags.map(t => `<span class="card-tag" onclick="setTagFilter('${escHtml(t)}')">#${escHtml(t)}</span>`).join('')}</div>` : ''}
           ${b.notes ? `<p class="card-notes">${escHtml(b.notes)}</p>` : ''}
           <span class="card-date">Added ${escHtml(b.date)}</span>
         </div>`;
@@ -901,6 +1161,7 @@
 
   function render() {
     renderFilters();
+    renderTagFilters();
     renderGrid();
   }
 
@@ -946,13 +1207,18 @@
     const url      = document.getElementById('f-url').value.trim();
     const category = document.getElementById('f-category').value.trim() || 'Uncategorized';
     const notes    = document.getElementById('f-notes').value.trim();
+    // Flush any partial tag in the input
+    const rawTag = document.getElementById('f-tag-input').value.trim();
+    if (rawTag) { formTagMgr.getTags(); document.getElementById('f-tag-input').dispatchEvent(new Event('blur')); }
+    const tags = formTagMgr ? formTagMgr.getTags() : [];
 
     if (!title || !url) return;
 
-    const bm = { id: uid(), title, url, category, notes, date: dateStr(), clicks: 0 };
+    const bm = { id: uid(), title, url, category, notes, tags, date: dateStr(), clicks: 0 };
     bookmarks.unshift(bm);
     save();
     e.target.reset();
+    if (formTagMgr) formTagMgr.reset();
     activeFilter = 'All';
     showAll = false;
     render();
@@ -1081,7 +1347,7 @@
 
       for (const item of parsed) {
         if (existingURLs.has(normalizeURL(item.url))) { skipped++; continue; }
-        bookmarks.push({ id: uid(), title: item.title, url: item.url, category: item.category || 'Imported', notes: item.notes || '', date: today });
+        bookmarks.push({ id: uid(), title: item.title, url: item.url, category: item.category || 'Imported', notes: item.notes || '', tags: [], date: today });
         existingURLs.add(normalizeURL(item.url));
         added++;
       }
@@ -1117,7 +1383,7 @@
   function buildBookmarkletHref() {
     const appUrl = getAppURL();
     // The bookmarklet JS — opens the app in a small popup with current page's title + URL
-    const code = `javascript:(function(){var t=encodeURIComponent(document.title||location.hostname);var u=encodeURIComponent(location.href);window.open('${appUrl}?bm_title='+t+'&bm_url='+u,'bmqs','width=420,height=220,top=200,left=400,resizable=no');})();`;
+    const code = `javascript:(function(){var t=encodeURIComponent(document.title||location.hostname);var u=encodeURIComponent(location.href);window.open('${appUrl}?bm_title='+t+'&bm_url='+u,'bmqs','width=420,height=340,top=200,left=400,resizable=no');})();`;
     return code;
   }
 
@@ -1156,13 +1422,13 @@
     const bmUrl   = params.get('bm_url');
     if (!bmTitle && !bmUrl) return; // normal mode
 
-    // Switch to popup UI
     document.body.classList.add('popup-mode');
 
-    const titleEl  = document.getElementById('popup-title');
-    const urlEl    = document.getElementById('popup-url');
-    const statusEl = document.getElementById('popup-status');
-    const iconEl   = document.getElementById('popup-icon');
+    const titleEl   = document.getElementById('popup-title');
+    const urlEl     = document.getElementById('popup-url');
+    const statusEl  = document.getElementById('popup-status');
+    const iconEl    = document.getElementById('popup-icon');
+    const tagRow    = document.getElementById('popup-tag-row');
 
     const title = decodeURIComponent(bmTitle || '');
     const url   = decodeURIComponent(bmUrl   || '');
@@ -1170,7 +1436,15 @@
     titleEl.textContent = title || url;
     urlEl.textContent   = url;
 
-    // Check duplicate
+    // Invalid URL check
+    if (!url || !/^https?:\/\//i.test(url)) {
+      iconEl.textContent   = '❌';
+      titleEl.textContent  = 'Invalid URL';
+      statusEl.textContent = 'Only http/https pages can be bookmarked.';
+      return;
+    }
+
+    // Duplicate check
     const isDupe = bookmarks.some(b => normalizeURL(b.url) === normalizeURL(url));
     if (isDupe) {
       iconEl.textContent   = '⚠️';
@@ -1180,28 +1454,45 @@
       return;
     }
 
-    if (!url || !/^https?:\/\//i.test(url)) {
-      iconEl.textContent   = '❌';
-      titleEl.textContent  = 'Invalid URL';
-      statusEl.textContent = 'Only http/https pages can be bookmarked.';
-      return;
+    // Show tag input form
+    tagRow.style.display = 'block';
+    iconEl.textContent   = '📎';
+    statusEl.textContent = '';
+
+    function doSave() {
+      // Flush partial tag input
+      const rawTag = document.getElementById('popup-tag-input').value.trim();
+      if (rawTag && popupTagMgr) { document.getElementById('popup-tag-input').dispatchEvent(new Event('blur')); }
+      const tags = popupTagMgr ? popupTagMgr.getTags() : [];
+
+      const bm = { id: uid(), title: title || url, url, category: 'Quick Save', tags, notes: '', date: dateStr(), clicks: 0 };
+      bookmarks.unshift(bm);
+      save();
+
+      tagRow.style.display = 'none';
+      iconEl.textContent   = '✅';
+      titleEl.textContent  = title || url;
+      statusEl.textContent = 'Saved! This window will close…';
+      statusEl.classList.add('success');
+
+      setTimeout(() => {
+        try { window.close(); } catch(e) {}
+        statusEl.textContent = '✅ Saved! You can close this tab.';
+      }, 1500);
     }
 
-    // Save
-    const bm = { id: uid(), title: title || url, url, category: 'Quick Save', notes: '', date: dateStr(), clicks: 0 };
-    bookmarks.unshift(bm);
-    save();
-
-    // Show success
-    iconEl.textContent = '✅';
-    statusEl.textContent = 'Saved! This window will close…';
-    statusEl.classList.add('success');
-
-    setTimeout(() => {
-      try { window.close(); } catch(e) {}
-      // If window.close() was blocked (e.g. not opened by script)
-      statusEl.textContent = '✅ Saved! You can close this tab.';
-    }, 1500);
+    document.getElementById('popup-save-btn').addEventListener('click', doSave);
+    document.getElementById('popup-skip-btn').addEventListener('click', () => {
+      if (popupTagMgr) popupTagMgr.reset();
+      doSave();
+    });
+    // Also allow Enter in the tag input to trigger save if no partial text
+    document.getElementById('popup-tag-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !document.getElementById('popup-tag-input').value.trim()) {
+        e.preventDefault();
+        doSave();
+      }
+    });
   }
 
   /* ── Init ──────────────────────────────────────────── */
