@@ -157,8 +157,8 @@ test('parseNetscapeHTML parses nested folders and skips non-http links', async (
 
   const parsed = window.parseNetscapeHTML(html);
   assert.equal(parsed.length, 2);
-  assert.deepEqual(parsed.map(x => x.title), ['MDN', 'Example']);
-  assert.deepEqual(parsed.map(x => x.category), ['Dev', 'Imported']);
+  assert.equal(parsed.map(x => x.title).join('|'), 'MDN|Example');
+  assert.equal(parsed.map(x => x.category).join('|'), 'Dev|Imported');
 
   dom.window.close();
 });
@@ -182,12 +182,10 @@ test('parseFirefoxJSON parses bookmark nodes and ignores invalid URLs', async ()
 
   const parsed = window.parseFirefoxJSON(json);
   assert.equal(parsed.length, 1);
-  assert.deepEqual(parsed[0], {
-    title: 'Mozilla',
-    url: 'https://mozilla.org',
-    category: 'Toolbar',
-    notes: ''
-  });
+  assert.equal(parsed[0].title, 'Mozilla');
+  assert.equal(parsed[0].url, 'https://mozilla.org');
+  assert.equal(parsed[0].category, 'Toolbar');
+  assert.equal(parsed[0].notes, '');
 
   assert.equal(window.parseFirefoxJSON('{bad json'), null);
 
