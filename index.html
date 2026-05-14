@@ -1508,7 +1508,7 @@
   }
 
   function normalizeURL(url) {
-    return (url || '').toLowerCase().replace(/\/+$/, '').trim();
+    return (url || '').trim().toLowerCase().replace(/\/+$/, '');
   }
 
   /* ── Bookmarklet Setup ─────────────────────────────── */
