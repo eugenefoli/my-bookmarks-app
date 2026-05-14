@@ -1,9 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 
-const INDEX_PATH = '/home/runner/work/my-bookmarks-app/my-bookmarks-app/index.html';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const INDEX_PATH = resolve(__dirname, '..', 'index.html');
 const STORAGE_KEY = 'my-bookmarks-v1';
 
 async function createAppDom(url = 'https://example.test/app') {
