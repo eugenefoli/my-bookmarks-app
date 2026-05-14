@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookmarks</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50:  #eff6ff;
+      --blue-100: #dbeafe;
+      --blue-200: #bfdbfe;
+      --blue-400: #60a5fa;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-800: #1e40af;
+      --gray-50:  #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --radius:   12px;
+      --shadow:   0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.05);
+      --shadow-lg:0 10px 15px -3px rgba(0,0,0,.10), 0 4px 6px -4px rgba(0,0,0,.05);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%);
+      color: #fff;
+      padding: 2rem 1.5rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    header h1 span { opacity: .75; font-weight: 400; }
+    header p { margin-top: .35rem; opacity: .85; font-size: .95rem; }
+
+    /* ── Main Layout ──────────────────────────────────── */
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ── Add Bookmark Card ────────────────────────────── */
+    .add-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .add-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .add-card h2::before { content: '+'; font-size: 1.2rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .form-grid input,
+    .form-grid textarea {
+      width: 100%;
+      padding: .65rem .9rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      transition: border-color .2s, box-shadow .2s;
+      resize: vertical;
+    }
+    .form-grid input:focus,
+    .form-grid textarea:focus {
+      outline: none;
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px var(--blue-100);
+      background: #fff;
+    }
+    .form-grid textarea { min-height: 70px; }
+
+    .btn-add {
+      margin-top: .25rem;
+      padding: .7rem 1.5rem;
+      background: var(--blue-600);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn-add:hover  { background: var(--blue-700); }
+    .btn-add:active { transform: scale(.97); }
+
+    /* ── Controls Row ─────────────────────────────────── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    #search {
+      flex: 1;
+      min-width: 200px;
+      padding: .65rem 1rem .65rem 2.6rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: .9rem;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat .8rem center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    #search:focus {
+      outline: none;
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px var(--blue-100);
+    }
+
+    /* ── Category Filter Pills ────────────────────────── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+    }
+    .filter-btn {
+      padding: .4rem .9rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--blue-200);
+      background: #fff;
+      color: var(--blue-600);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .filter-btn:hover { background: var(--blue-50); }
+    .filter-btn.active {
+      background: var(--blue-600);
+      color: #fff;
+      border-color: var(--blue-600);
+    }
+
+    /* ── Stats Bar ────────────────────────────────────── */
+    .stats {
+      font-size: .82rem;
+      color: var(--gray-500);
+      margin-bottom: 1rem;
+    }
+    .stats strong { color: var(--gray-700); }
+
+    /* ── Empty State ──────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray-400);
+    }
+    .empty svg { margin-bottom: 1rem; opacity: .4; }
+    .empty p { font-size: 1.05rem; }
+
+    /* ── Bookmark Grid ────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ── Bookmark Card ────────────────────────────────── */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      border-top: 3px solid var(--blue-400);
+      transition: box-shadow .2s, transform .2s;
+      position: relative;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    .btn-delete {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      font-size: .85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+      line-height: 1;
+    }
+    .btn-delete:hover { background: #fee2e2; color: #ef4444; }
+
+    .card-url {
+      font-size: .8rem;
+      color: var(--blue-500);
+      word-break: break-all;
+      text-decoration: none;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-url:hover { text-decoration: underline; color: var(--blue-700); }
+
+    .card-category {
+      display: inline-block;
+      padding: .2rem .65rem;
+      border-radius: 999px;
+      background: var(--blue-50);
+      color: var(--blue-700);
+      font-size: .75rem;
+      font-weight: 600;
+      border: 1px solid var(--blue-100);
+      width: fit-content;
+    }
+
+    .card-notes {
+      font-size: .82rem;
+      color: var(--gray-500);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-date {
+      font-size: .72rem;
+      color: var(--gray-400);
+      margin-top: auto;
+    }
+
+    /* ── Toast Notification ───────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--gray-900);
+      color: #fff;
+      padding: .7rem 1.2rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+      z-index: 100;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Import Card ──────────────────────────────────── */
+    .import-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .import-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      transition: background .15s;
+    }
+    .import-toggle:hover { background: var(--blue-50); }
+    .import-toggle .arrow {
+      margin-left: auto;
+      font-size: .75rem;
+      color: var(--gray-400);
+      transition: transform .25s;
+    }
+    .import-toggle[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+
+    .import-body {
+      display: none;
+      padding: 0 1.5rem 1.5rem;
+      border-top: 1px solid var(--gray-100);
+    }
+    .import-body.open { display: block; }
+
+    .import-instructions {
+      margin: 1rem 0;
+      padding: .9rem 1rem;
+      background: var(--blue-50);
+      border-radius: 8px;
+      border: 1px solid var(--blue-100);
+    }
+    .import-instructions p {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      margin-bottom: .5rem;
+    }
+    .import-instructions ol {
+      padding-left: 1.1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .15rem .75rem;
+    }
+    .import-instructions li {
+      font-size: .8rem;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+    .import-instructions li strong { color: var(--gray-800); }
+
+    .import-drop {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: 1.5rem;
+      border: 2px dashed var(--blue-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      text-align: center;
+    }
+    .import-drop:hover, .import-drop.drag-over {
+      background: var(--blue-50);
+      border-color: var(--blue-400);
+    }
+    .import-drop svg { color: var(--blue-300); }
+    .import-drop .drop-label {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--gray-600);
+    }
+    .import-drop .drop-sub {
+      font-size: .78rem;
+      color: var(--gray-400);
+    }
+    #import-file { display: none; }
+
+    .btn-import {
+      margin-top: .75rem;
+      padding: .65rem 1.4rem;
+      background: var(--blue-600);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      display: none;
+    }
+    .btn-import:hover  { background: var(--blue-700); }
+    .btn-import:active { transform: scale(.97); }
+    .btn-import.visible { display: inline-block; }
+
+    .import-selected {
+      margin-top: .5rem;
+      font-size: .82rem;
+      color: var(--gray-500);
+      display: none;
+    }
+    .import-selected.visible { display: block; }
+
+    /* ── Heatmap Tiers ────────────────────────────────── */
+    /* heat-0: unclicked — default card style, no change */
+    .heat-1 { border-top-color: var(--blue-300); background: #f0f7ff; }
+    .heat-2 { border-top-color: var(--blue-500); background: #e6f0ff; }
+    .heat-3 { border-top-color: var(--blue-700); background: #dce8ff; }
+    .heat-4 { border-top-color: #d97706; background: #fffbeb; } /* gold */
+
+    .heat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--gray-400);
+      margin-left: auto;
+    }
+    .heat-4 .heat-badge { color: #d97706; }
+    .heat-3 .heat-badge { color: var(--blue-700); }
+    .heat-2 .heat-badge { color: var(--blue-500); }
+    .heat-1 .heat-badge { color: var(--blue-400); }
+
+    /* ── See More Button ──────────────────────────────── */
+    .see-more-wrap {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: .5rem 0 .25rem;
+    }
+    .btn-see-more {
+      padding: .55rem 1.4rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--blue-200);
+      background: #fff;
+      color: var(--blue-600);
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-see-more:hover { background: var(--blue-50); border-color: var(--blue-400); }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+      .grid { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; align-items: stretch; }
+      #search { min-width: unset; }
+      .import-instructions ol { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📌 My Bookmarks <span>Dashboard</span></h1>
+  <p>Your personal saved links, organized and searchable.</p>
+</header>
+
+<main>
+  <!-- Search + Filters -->
+  <div class="controls">
+    <input type="search" id="search" placeholder="Search by title or category…" />
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="stats"  id="stats"></div>
+
+  <!-- Grid -->
+  <div class="grid" id="grid"></div>
+
+  <!-- Empty state (hidden when grid has items) -->
+  <div class="empty" id="empty" style="display:none">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+    </svg>
+    <p>No bookmarks match your search.</p>
+  </div>
+
+  <!-- Add Bookmark Form -->
+  <div class="add-card" style="margin-top:2rem">
+    <h2>Add New Bookmark</h2>
+    <form id="bookmark-form" autocomplete="off">
+      <div class="form-grid">
+        <input type="text"  id="f-title"    placeholder="Title *"    required />
+        <input type="url"   id="f-url"      placeholder="URL (https://…) *" required />
+        <input type="text"  id="f-category" placeholder="Category (e.g. Design, Dev, News)" />
+        <textarea           id="f-notes"    placeholder="Notes (optional)"></textarea>
+      </div>
+      <div style="margin-top:.75rem">
+        <button type="submit" class="btn-add">Save Bookmark</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Import Bookmarks Panel -->
+  <div class="import-card">
+    <button class="import-toggle" aria-expanded="false" onclick="toggleImport(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Import from Browser
+      <span class="arrow">▼</span>
+    </button>
+    <div class="import-body" id="import-body">
+      <div class="import-instructions">
+        <p>📖 How to export bookmarks from your browser:</p>
+        <ol>
+          <li><strong>Chrome / Edge:</strong> Bookmarks menu → Bookmark manager → ⋮ → Export bookmarks</li>
+          <li><strong>Firefox:</strong> Bookmarks → Manage Bookmarks → Import &amp; Backup → Export Bookmarks to HTML</li>
+          <li><strong>Safari:</strong> File menu → Export Bookmarks…</li>
+          <li><strong>Firefox (JSON):</strong> Manage Bookmarks → Import &amp; Backup → Backup… (saves as .json)</li>
+        </ol>
+      </div>
+
+      <label for="import-file">
+        <div class="import-drop" id="import-drop">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+          <span class="drop-label">Click to choose a bookmarks file</span>
+          <span class="drop-sub">Supported: .html (Chrome, Edge, Firefox, Safari) · .json (Firefox)</span>
+        </div>
+      </label>
+      <input type="file" id="import-file" accept=".html,.htm,.json" />
+      <p class="import-selected" id="import-selected"></p>
+      <button class="btn-import" id="btn-import" onclick="runImport()">Import Bookmarks</button>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  /* ── Seed Data ─────────────────────────────────────── */
+  const SEED = [
+    { id: uid(), title: 'GitHub',           url: 'https://github.com',                 category: 'Development',  notes: 'Code hosting & collaboration.',           date: dateStr() },
+    { id: uid(), title: 'MDN Web Docs',     url: 'https://developer.mozilla.org',      category: 'Development',  notes: 'The go-to reference for web APIs & HTML.', date: dateStr() },
+    { id: uid(), title: 'CSS-Tricks',       url: 'https://css-tricks.com',             category: 'Design',       notes: 'Tips, guides, and snippets for CSS.',      date: dateStr() },
+    { id: uid(), title: 'Figma',            url: 'https://figma.com',                  category: 'Design',       notes: 'Collaborative UI design tool.',            date: dateStr() },
+    { id: uid(), title: 'Hacker News',      url: 'https://news.ycombinator.com',       category: 'News',         notes: 'Tech news and community discussions.',     date: dateStr() },
+    { id: uid(), title: 'Google Drive',     url: 'https://drive.google.com',           category: 'Productivity', notes: 'Cloud file storage and sharing.',          date: dateStr() },
+    { id: uid(), title: 'Stack Overflow',   url: 'https://stackoverflow.com',          category: 'Development',  notes: 'Q&A for programmers.',                    date: dateStr() },
+    { id: uid(), title: 'Dribbble',         url: 'https://dribbble.com',               category: 'Design',       notes: 'Design inspiration and portfolios.',      date: dateStr() },
+  ];
+
+  const STORAGE_KEY = 'my-bookmarks-v1';
+  let bookmarks  = load();
+  let activeFilter = 'All';
+
+  /* ── Persistence ───────────────────────────────────── */
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+  }
+
+  /* ── Initialise ────────────────────────────────────── */
+  if (!bookmarks) {
+    bookmarks = SEED;
+    save();
+  }
+
+  // Migration: ensure every bookmark has a clicks field
+  let migrated = false;
+  bookmarks.forEach(b => { if (typeof b.clicks !== 'number') { b.clicks = 0; migrated = true; } });
+  if (migrated) save();
+
+  /* ── Utilities ─────────────────────────────────────── */
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function dateStr() {
+    return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  /* ── Heatmap Tier Computation ──────────────────────── */
+  function heatTier(bm, sorted) {
+    if (!bm.clicks) return 0;
+    const rank = sorted.indexOf(bm); // rank among clicked-only, sorted desc
+    const total = sorted.length;
+    if (rank === 0) return 4;                         // #1 — gold
+    if (rank < Math.ceil(total * 0.25)) return 3;    // top 25% — deep blue
+    if (rank < Math.ceil(total * 0.50)) return 2;    // top 50% — medium blue
+    return 1;                                         // rest — light blue
+  }
+
+  function tierLabel(tier, clicks) {
+    if (!clicks) return '';
+    const icons = ['', '▲', '▲▲', '★', '🔥'];
+    return `<span class="heat-badge">${icons[tier]} ${clicks}</span>`;
+  }
+
+  /* ── Render ────────────────────────────────────────── */
+  let showAll = false; // tracks whether "See more" is expanded
+
+  function getCategories() {
+    const cats = [...new Set(bookmarks.map(b => b.category || 'Uncategorized').filter(Boolean))].sort();
+    return ['All', ...cats];
+  }
+
+  function renderFilters() {
+    const cats = getCategories();
+    if (!cats.includes(activeFilter)) activeFilter = 'All';
+    document.getElementById('filters').innerHTML = cats.map(cat =>
+      `<button class="filter-btn ${cat === activeFilter ? 'active' : ''}"
+               onclick="setFilter('${escHtml(cat)}')">${escHtml(cat)}</button>`
+    ).join('');
+  }
+
+  function filtered() {
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    return bookmarks.filter(b => {
+      const cat = b.category || 'Uncategorized';
+      const matchesCat = activeFilter === 'All' || cat === activeFilter;
+      const matchesQ   = !q ||
+        b.title.toLowerCase().includes(q) ||
+        cat.toLowerCase().includes(q) ||
+        (b.notes || '').toLowerCase().includes(q);
+      return matchesCat && matchesQ;
+    }).sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || 0);
+  }
+
+  function renderGrid() {
+    const q         = document.getElementById('search').value.trim();
+    const isDefault = !q && activeFilter === 'All';
+    const items     = filtered();
+    const grid      = document.getElementById('grid');
+    const empty     = document.getElementById('empty');
+    const stats     = document.getElementById('stats');
+
+    stats.innerHTML = `Showing <strong>${items.length}</strong> of <strong>${bookmarks.length}</strong> bookmark${bookmarks.length !== 1 ? 's' : ''}`;
+
+    if (items.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    // Sorted list of clicked bookmarks (for tier calculation)
+    const clickedSorted = [...bookmarks].filter(b => b.clicks > 0).sort((a, b) => b.clicks - a.clicks);
+
+    const TOP = 5;
+    const visibleItems  = isDefault && !showAll ? items.slice(0, TOP) : items;
+    const hiddenCount   = isDefault ? Math.max(0, items.length - TOP) : 0;
+
+    grid.innerHTML = visibleItems.map(b => {
+      const cat        = b.category || 'Uncategorized';
+      const displayUrl = b.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const tier       = heatTier(b, clickedSorted);
+      return `
+        <div class="card heat-${tier}" id="card-${escHtml(b.id)}">
+          <div class="card-header">
+            <span class="card-title">${escHtml(b.title)}</span>
+            <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0">
+              ${tierLabel(tier, b.clicks || 0)}
+              <button class="btn-delete" title="Delete bookmark"
+                      onclick="deleteBookmark('${escHtml(b.id)}')">✕</button>
+            </div>
+          </div>
+          <a class="card-url" href="${escHtml(b.url)}" target="_blank"
+             rel="noopener noreferrer" title="${escHtml(b.url)}"
+             data-id="${escHtml(b.id)}">${escHtml(displayUrl)}</a>
+          <span class="card-category">${escHtml(cat)}</span>
+          ${b.notes ? `<p class="card-notes">${escHtml(b.notes)}</p>` : ''}
+          <span class="card-date">Added ${escHtml(b.date)}</span>
+        </div>`;
+    }).join('');
+
+    // See more / See less button
+    if (isDefault && items.length > TOP) {
+      const wrap = document.createElement('div');
+      wrap.className = 'see-more-wrap';
+      wrap.innerHTML = showAll
+        ? `<button class="btn-see-more" onclick="toggleShowAll()">See less</button>`
+        : `<button class="btn-see-more" onclick="toggleShowAll()">See more (${hiddenCount} more)</button>`;
+      grid.appendChild(wrap);
+    }
+  }
+
+  function render() {
+    renderFilters();
+    renderGrid();
+  }
+
+  /* ── Actions ───────────────────────────────────────── */
+  function setFilter(cat) {
+    activeFilter = cat;
+    showAll = false;
+    render();
+  }
+
+  function toggleShowAll() {
+    showAll = !showAll;
+    renderGrid();
+  }
+
+  function deleteBookmark(id) {
+    const bm = bookmarks.find(b => b.id === id);
+    if (!bm) return;
+    if (!confirm(`Delete "${bm.title}"?`)) return;
+    bookmarks = bookmarks.filter(b => b.id !== id);
+    save();
+    render();
+    toast(`"${bm.title}" deleted.`);
+  }
+
+  /* ── Click Tracking ────────────────────────────────── */
+  document.getElementById('grid').addEventListener('click', e => {
+    const link = e.target.closest('a.card-url[data-id]');
+    if (!link) return;
+    const id = link.dataset.id;
+    const bm = bookmarks.find(b => b.id === id);
+    if (!bm) return;
+    bm.clicks = (bm.clicks || 0) + 1;
+    save();
+    // Re-render after a short delay so navigation isn't blocked
+    setTimeout(renderGrid, 150);
+  });
+
+  /* ── Form Submit ───────────────────────────────────── */
+  document.getElementById('bookmark-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const title    = document.getElementById('f-title').value.trim();
+    const url      = document.getElementById('f-url').value.trim();
+    const category = document.getElementById('f-category').value.trim() || 'Uncategorized';
+    const notes    = document.getElementById('f-notes').value.trim();
+
+    if (!title || !url) return;
+
+    const bm = { id: uid(), title, url, category, notes, date: dateStr(), clicks: 0 };
+    bookmarks.unshift(bm);
+    save();
+    e.target.reset();
+    activeFilter = 'All';
+    showAll = false;
+    render();
+    toast(`"${title}" saved!`);
+  });
+
+  /* ── Search ────────────────────────────────────────── */
+  document.getElementById('search').addEventListener('input', () => { showAll = false; renderGrid(); });
+
+  /* ── Import Panel Toggle ───────────────────────────── */
+  function toggleImport(btn) {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    document.getElementById('import-body').classList.toggle('open', !expanded);
+  }
+
+  /* ── File Input Handling ───────────────────────────── */
+  const importFileEl = document.getElementById('import-file');
+  const importDrop   = document.getElementById('import-drop');
+
+  importFileEl.addEventListener('change', () => {
+    const file = importFileEl.files[0];
+    if (!file) return;
+    const sel = document.getElementById('import-selected');
+    sel.textContent = `Selected: ${file.name}`;
+    sel.classList.add('visible');
+    document.getElementById('btn-import').classList.add('visible');
+  });
+
+  // Drag-and-drop support on the drop zone
+  importDrop.addEventListener('dragover', e => { e.preventDefault(); importDrop.classList.add('drag-over'); });
+  importDrop.addEventListener('dragleave', ()  => importDrop.classList.remove('drag-over'));
+  importDrop.addEventListener('drop', e => {
+    e.preventDefault();
+    importDrop.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    importFileEl.files = dt.files;
+    importFileEl.dispatchEvent(new Event('change'));
+  });
+
+  /* ── Netscape HTML Parser ──────────────────────────── */
+  function parseNetscapeHTML(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const rootDL = doc.querySelector('dl');
+    if (!rootDL) return [];
+    return walkDL(rootDL, 'Imported');
+  }
+
+  function walkDL(dl, folderName) {
+    const results = [];
+    const children = Array.from(dl.children);
+    let i = 0;
+    while (i < children.length) {
+      const node = children[i];
+      if (node.tagName === 'DT') {
+        const h3 = node.querySelector(':scope > h3');
+        const a  = node.querySelector(':scope > a');
+        if (h3) {
+          // It's a folder — find the next sibling DL
+          const subDL = node.querySelector(':scope > dl') || (children[i + 1] && children[i + 1].tagName === 'DL' ? children[i + 1] : null);
+          if (subDL) {
+            results.push(...walkDL(subDL, h3.textContent.trim() || folderName));
+          }
+        } else if (a) {
+          const href = a.getAttribute('href') || '';
+          const title = a.textContent.trim() || href;
+          if (href && /^https?:\/\//i.test(href)) {
+            results.push({ title, url: href, category: folderName, notes: '' });
+          }
+        }
+      } else if (node.tagName === 'DL') {
+        // Bare DL not preceded by DT>H3 — recurse with current folder
+        results.push(...walkDL(node, folderName));
+      }
+      i++;
+    }
+    return results;
+  }
+
+  /* ── Firefox JSON Parser ───────────────────────────── */
+  function parseFirefoxJSON(json) {
+    let root;
+    try { root = JSON.parse(json); } catch { return null; }
+    const results = [];
+    walkFFNode(root, 'Imported', results);
+    return results;
+  }
+
+  function walkFFNode(node, folderName, results) {
+    if (!node) return;
+    if (node.type === 'text/x-moz-place') {
+      const href = node.uri || '';
+      if (href && /^https?:\/\//i.test(href)) {
+        results.push({ title: node.title || href, url: href, category: folderName, notes: '' });
+      }
+    } else if (node.children) {
+      const name = node.title && node.title.trim() ? node.title.trim() : folderName;
+      for (const child of node.children) walkFFNode(child, name, results);
+    }
+  }
+
+  /* ── Import Orchestrator ───────────────────────────── */
+  function runImport() {
+    const file = importFileEl.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      let parsed = null;
+
+      if (file.name.toLowerCase().endsWith('.json')) {
+        parsed = parseFirefoxJSON(text);
+        if (!parsed) { toast('❌ Could not parse JSON. Is this a Firefox bookmarks backup?'); return; }
+      } else {
+        parsed = parseNetscapeHTML(text);
+        if (!parsed) { toast('❌ Could not parse HTML. Is this a browser bookmarks export?'); return; }
+      }
+
+      const existingURLs = new Set(bookmarks.map(b => normalizeURL(b.url)));
+      let added = 0, skipped = 0;
+      const today = dateStr();
+
+      for (const item of parsed) {
+        if (existingURLs.has(normalizeURL(item.url))) { skipped++; continue; }
+        bookmarks.push({ id: uid(), title: item.title, url: item.url, category: item.category || 'Imported', notes: item.notes || '', date: today });
+        existingURLs.add(normalizeURL(item.url));
+        added++;
+      }
+
+      if (added === 0 && skipped === 0) { toast('No bookmarks found in that file.'); return; }
+
+      save();
+      activeFilter = 'All';
+      render();
+
+      // Reset import UI
+      importFileEl.value = '';
+      document.getElementById('import-selected').textContent = '';
+      document.getElementById('import-selected').classList.remove('visible');
+      document.getElementById('btn-import').classList.remove('visible');
+
+      const skipMsg = skipped > 0 ? ` (${skipped} duplicate${skipped !== 1 ? 's' : ''} skipped)` : '';
+      toast(`✅ Imported ${added} bookmark${added !== 1 ? 's' : ''}${skipMsg}`);
+    };
+    reader.readAsText(file);
+  }
+
+  function normalizeURL(url) {
+    return (url || '').toLowerCase().replace(/\/+$/, '').trim();
+  }
+
+  /* ── Init ──────────────────────────────────────────── */
+  render();
+</script>
+</body>
+</html>
