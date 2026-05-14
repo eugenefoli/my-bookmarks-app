@@ -35,7 +35,70 @@
       background: var(--gray-50);
       color: var(--gray-800);
       min-height: 100vh;
+      transition: background .25s, color .25s;
     }
+
+    /* ── Dark Mode ────────────────────────────────────── */
+    body.dark {
+      --gray-50:  #0f172a;
+      --gray-100: #1e293b;
+      --gray-200: #334155;
+      --gray-400: #94a3b8;
+      --gray-500: #94a3b8;
+      --gray-600: #cbd5e1;
+      --gray-700: #e2e8f0;
+      --gray-800: #e2e8f0;
+      --gray-900: #f1f5f9;
+      --shadow:   0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -2px rgba(0,0,0,.3);
+      --shadow-lg:0 10px 15px -3px rgba(0,0,0,.5), 0 4px 6px -4px rgba(0,0,0,.3);
+    }
+    body.dark .card,
+    body.dark .add-card,
+    body.dark .import-card,
+    body.dark .bookmarklet-card,
+    body.dark .combobox-dd,
+    body.dark .popup-card  { background: #1e293b; }
+    body.dark .card.heat-4 { background: #292217; }
+    body.dark #search,
+    body.dark .form-grid input,
+    body.dark .form-grid textarea,
+    body.dark .tag-input-wrap,
+    body.dark .filter-btn  { background: #0f172a; }
+    body.dark .form-grid input:focus,
+    body.dark .form-grid textarea:focus { background: #0f172a; }
+    body.dark .filter-btn  { color: var(--blue-300, #93c5fd); border-color: #334155; }
+    body.dark .filter-btn.active { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
+    body.dark .card-edit-input { background: #0f172a; color: var(--gray-900); border-color: #334155; }
+    body.dark .card-edit-input:focus { background: #0f172a; border-color: var(--blue-400); }
+    body.dark .btn-delete  { background: #334155; color: var(--gray-400); }
+    body.dark .btn-edit    { background: #334155; color: var(--gray-400); }
+    body.dark .btn-delete:hover { background: #450a0a; color: #ef4444; }
+    body.dark .btn-edit:hover   { background: #1e3a5f; color: var(--blue-400); }
+    body.dark .bm-drag-area,
+    body.dark .bm-instructions { background: #0f172a; border-color: #334155; }
+    body.dark .import-body { border-top-color: #334155; }
+    body.dark .import-drop-zone { background: #0f172a; border-color: #334155; }
+
+    /* ── Dark Mode Toggle Button ───────────────────────── */
+    .dark-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.3);
+      color: #fff;
+      border-radius: 999px;
+      padding: .35rem .75rem;
+      font-size: .85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-weight: 600;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .dark-toggle:hover { background: rgba(255,255,255,.25); }
 
     /* ── Header ───────────────────────────────────────── */
     header {
@@ -44,6 +107,7 @@
       padding: 2rem 1.5rem 1.5rem;
       text-align: center;
       box-shadow: var(--shadow-lg);
+      position: relative;
     }
     header h1 {
       font-size: clamp(1.6rem, 4vw, 2.4rem);
@@ -241,6 +305,78 @@
       line-height: 1;
     }
     .btn-delete:hover { background: #fee2e2; color: #ef4444; }
+
+    .btn-edit {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      font-size: .8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+      line-height: 1;
+    }
+    .btn-edit:hover { background: var(--blue-100); color: var(--blue-600); }
+
+    /* ── Inline Card Edit Form ────────────────────────── */
+    .card-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+    }
+    .card-edit-input {
+      width: 100%;
+      padding: .5rem .75rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: .88rem;
+      font-family: inherit;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .card-edit-input:focus {
+      outline: none;
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px var(--blue-100);
+      background: #fff;
+    }
+    .card-edit-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: .25rem;
+    }
+    .btn-save-edit {
+      flex: 1;
+      padding: .45rem .75rem;
+      background: var(--blue-600);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-save-edit:hover { background: var(--blue-700); }
+    .btn-cancel-edit {
+      padding: .45rem .75rem;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 7px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-cancel-edit:hover { background: var(--gray-200); }
 
     .card-url {
       font-size: .8rem;
@@ -804,6 +940,9 @@
 <body>
 
 <header>
+  <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
+    <span id="dark-icon">🌙</span> <span id="dark-label">Dark</span>
+  </button>
   <h1>📌 My Bookmarks <span>Dashboard</span></h1>
   <p>Your personal saved links, organized and searchable.</p>
 </header>
@@ -1249,6 +1388,8 @@
             <span class="card-title">${escHtml(b.title)}</span>
             <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0">
               ${tierLabel(tier, b.clicks || 0)}
+              <button class="btn-edit" title="Edit bookmark"
+                      onclick="openEditCard('${escHtml(b.id)}')">✏️</button>
               <button class="btn-delete" title="Delete bookmark"
                       onclick="deleteBookmark('${escHtml(b.id)}')">✕</button>
             </div>
@@ -1300,6 +1441,71 @@
     save();
     render();
     toast(`"${bm.title}" deleted.`);
+  }
+
+  /* ── Dark Mode ─────────────────────────────────────── */
+  function toggleDark() {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('my-bookmarks-theme', isDark ? 'dark' : 'light');
+    document.getElementById('dark-icon').textContent  = isDark ? '☀️' : '🌙';
+    document.getElementById('dark-label').textContent = isDark ? 'Light' : 'Dark';
+  }
+  // Restore saved preference
+  if (localStorage.getItem('my-bookmarks-theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.getElementById('dark-icon').textContent  = '☀️';
+    document.getElementById('dark-label').textContent = 'Light';
+  }
+
+  /* ── Edit Bookmark (inline card form) ──────────────── */
+  function openEditCard(id) {
+    const bm = bookmarks.find(b => b.id === id);
+    if (!bm) return;
+    const card = document.getElementById(`card-${id}`);
+    if (!card) return;
+
+    const ddId    = `edit-cat-dd-${id}`;
+    const inputId = `edit-cat-${id}`;
+
+    card.innerHTML = `
+      <div class="card-edit-form">
+        <input class="card-edit-input" id="edit-title-${id}" type="text"
+               placeholder="Title *" value="${escHtml(bm.title)}" required />
+        <input class="card-edit-input" id="edit-url-${id}" type="url"
+               placeholder="URL *" value="${escHtml(bm.url)}" required />
+        <div class="combobox-wrap">
+          <input class="card-edit-input" id="${inputId}" type="text"
+                 placeholder="Category" value="${escHtml(bm.category || '')}" autocomplete="off" />
+          <div class="combobox-dd" id="${ddId}"><ul></ul></div>
+        </div>
+        <textarea class="card-edit-input" id="edit-notes-${id}"
+                  rows="2" placeholder="Notes (optional)">${escHtml(bm.notes || '')}</textarea>
+        <div class="card-edit-actions">
+          <button class="btn-save-edit"   onclick="saveEditCard('${id}')">Save</button>
+          <button class="btn-cancel-edit" onclick="render()">Cancel</button>
+        </div>
+      </div>`;
+
+    // Wire category combobox for the inline form
+    makeCategoryCombobox(inputId, ddId);
+    document.getElementById(`edit-title-${id}`).focus();
+  }
+
+  function saveEditCard(id) {
+    const bm = bookmarks.find(b => b.id === id);
+    if (!bm) return;
+    const title    = document.getElementById(`edit-title-${id}`).value.trim();
+    const url      = document.getElementById(`edit-url-${id}`).value.trim();
+    const category = document.getElementById(`edit-cat-${id}`).value.trim() || 'Uncategorized';
+    const notes    = document.getElementById(`edit-notes-${id}`).value.trim();
+    if (!title || !url) { toast('Title and URL are required.'); return; }
+    bm.title    = title;
+    bm.url      = url;
+    bm.category = category;
+    bm.notes    = notes;
+    save();
+    render();
+    toast(`"${title}" updated.`);
   }
 
   /* ── Click Tracking ────────────────────────────────── */
